@@ -4,43 +4,43 @@
 
 `ctx_all` = share of questions whose gold chunks are all in the context the model sees; `avg chunks` = chunks sent to the model (cost).
 
-Labels reviewed by a human: 2 of 44.
+Labels reviewed by a human: 8 of 44.
 
 ## Candidate configurations (first row = current default)
 
 | candidate_k | keyword weight | k | neighbours | anchor_any | ctx_any | ctx_all | avg chunks | violations |
 |---|---|---|---|---|---|---|---|---|
-| 20 | 0.25 | 5 | 0 | 0.955 | 0.955 | 0.932 | 5.0 | 0 |
+| 20 | 0.25 | 5 | 0 | 0.955 | 0.955 | 0.955 | 5.0 | 0 |
 | 20 | 0.25 | 5 | 1 | 0.955 | 0.977 | 0.977 | 6.8 | 0 |
-| 20 | 0.1 | 5 | 0 | 1.000 | 1.000 | 0.977 | 5.0 | 0 |
+| 20 | 0.1 | 5 | 0 | 1.000 | 1.000 | 1.000 | 5.0 | 0 |
 | 20 | 0.1 | 5 | 1 | 1.000 | 1.000 | 1.000 | 6.6 | 0 |
-| 20 | 0.0 | 5 | 1 | 1.000 | 1.000 | 0.977 | 6.3 | 0 |
+| 20 | 0.0 | 5 | 1 | 1.000 | 1.000 | 1.000 | 6.3 | 0 |
 | 20 | 0.1 | 8 | 1 | 1.000 | 1.000 | 1.000 | 9.1 | 0 |
 
 ## Best 12 configurations (sorted by ctx_all, then fewest chunks)
 
 | candidate_k | keyword weight | k | neighbours | anchor_any | ctx_any | ctx_all | avg chunks | violations |
 |---|---|---|---|---|---|---|---|---|
+| 10 | 0.0 | 5 | 0 | 1.000 | 1.000 | 1.000 | 5.0 | 0 |
+| 10 | 0.1 | 5 | 0 | 1.000 | 1.000 | 1.000 | 5.0 | 0 |
+| 20 | 0.0 | 5 | 0 | 1.000 | 1.000 | 1.000 | 5.0 | 0 |
+| 20 | 0.1 | 5 | 0 | 1.000 | 1.000 | 1.000 | 5.0 | 0 |
+| 10 | 0.0 | 5 | 1 | 1.000 | 1.000 | 1.000 | 6.3 | 0 |
+| 20 | 0.0 | 5 | 1 | 1.000 | 1.000 | 1.000 | 6.3 | 0 |
 | 20 | 0.1 | 5 | 1 | 1.000 | 1.000 | 1.000 | 6.6 | 0 |
 | 10 | 0.1 | 5 | 1 | 1.000 | 1.000 | 1.000 | 6.6 | 0 |
 | 10 | 0.25 | 5 | 1 | 0.977 | 1.000 | 1.000 | 6.6 | 0 |
 | 10 | 0.5 | 5 | 1 | 0.977 | 1.000 | 1.000 | 6.7 | 0 |
 | 10 | 0.0 | 8 | 0 | 1.000 | 1.000 | 1.000 | 8.0 | 0 |
 | 10 | 0.1 | 8 | 0 | 1.000 | 1.000 | 1.000 | 8.0 | 0 |
-| 10 | 0.25 | 8 | 0 | 1.000 | 1.000 | 1.000 | 8.0 | 0 |
-| 10 | 0.5 | 8 | 0 | 1.000 | 1.000 | 1.000 | 8.0 | 0 |
-| 20 | 0.0 | 8 | 0 | 1.000 | 1.000 | 1.000 | 8.0 | 0 |
-| 20 | 0.1 | 8 | 0 | 1.000 | 1.000 | 1.000 | 8.0 | 0 |
-| 10 | 0.0 | 8 | 1 | 1.000 | 1.000 | 1.000 | 8.9 | 0 |
-| 20 | 0.0 | 8 | 1 | 1.000 | 1.000 | 1.000 | 8.9 | 0 |
 
 ## Questions whose gold chunks are NOT all in the context (candidates)
 
-- ck=20 w=0.25 k=5 neighbours=0: q44, q47, q48
+- ck=20 w=0.25 k=5 neighbours=0: q44, q48
 - ck=20 w=0.25 k=5 neighbours=1: q44
-- ck=20 w=0.1 k=5 neighbours=0: q47
+- ck=20 w=0.1 k=5 neighbours=0: none
 - ck=20 w=0.1 k=5 neighbours=1: none
-- ck=20 w=0.0 k=5 neighbours=1: q26
+- ck=20 w=0.0 k=5 neighbours=1: none
 - ck=20 w=0.1 k=8 neighbours=1: none
 
 ## Gold chunk labels (review these; edit data/eval/gold_chunks.json)
@@ -56,7 +56,7 @@ Labels reviewed by a human: 2 of 44.
 | q07 | 5 to 10 business days (not the old 14 days) | refund-policy-v2:4 [How refunds are paid] |
 | q08 | 100 requests per minute | api-rate-limits:1 [Limits per plan] |
 | q09 | Depends on plan: Growth 100/min, Scale 600/min, Starter has no API acc | api-rate-limits:0 [API Rate Limits], api-rate-limits:1 [Limits per plan] |
-| q10 | 10 requests | api-rate-limits:1 [Limits per plan], api-rate-limits:4 [Batch endpoint] |
+| q10 | 10 requests | api-rate-limits:4 [Batch endpoint] |
 | q11 | Wait for Retry-After, then exponential backoff from 1 second, max 5 re | api-rate-limits:3 [Handling HTTP 429] |
 | q12 | 24 hours | api-rate-limits:5 [Idempotency] |
 | q13 | invoice.created, invoice.paid, invoice.overdue, payment.failed, custom | webhooks:1 [Events] |
@@ -72,7 +72,7 @@ Labels reviewed by a human: 2 of 44.
 | q23 | No. SOC 2 Type II audit in progress, report expected Q1 2027 | security-and-data:3 [Compliance] |
 | q24 | 35 days | security-and-data:2 [Backups and retention] |
 | q25 | Retained 90 days, then permanently deleted | security-and-data:2 [Backups and retention] |
-| q26 | SAML SSO on Scale only | pricing-plans:1 [Plans], security-and-data:4 [Access control] |
+| q26 | SAML SSO on Scale only | security-and-data:4 [Access control] |
 | q27 | Complete the 3-D Secure authentication step in the payment link | failed-payments-troubleshooting:0 [Common error codes] |
 | q28 | Day 1, day 3 and day 7, then the invoice is marked overdue | failed-payments-troubleshooting:1 [Automatic retries and reminders] |
 | q29 | $15 per dispute | failed-payments-troubleshooting:2 [Payouts and disputes] |
@@ -89,5 +89,5 @@ Labels reviewed by a human: 2 of 44.
 | q44 | Starter, $19/month, up to 50 invoices per month | pricing-plans:1 [Plans] |
 | q45 | Scale gets a 10% or 25% service credit; Growth has no credits; Starter | support-and-sla:1 [Uptime] |
 | q46 | $15 per dispute | failed-payments-troubleshooting:2 [Payouts and disputes] |
-| q47 | SAML single sign-on, Scale plan only | pricing-plans:1 [Plans], security-and-data:4 [Access control] |
+| q47 | SAML single sign-on, Scale plan only | security-and-data:4 [Access control] |
 | q48 | 14-day trial, no card for Starter/Growth | pricing-plans:4 [Free trial] |

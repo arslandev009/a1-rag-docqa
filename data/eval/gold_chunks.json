@@ -49,7 +49,7 @@
         "refund-policy-v2:1",
         "refund-policy-v2:2"
       ],
-      "reviewed": false
+      "reviewed": true
     },
     "q07": {
       "question": "How long does a refund take to reach my card?",
@@ -74,16 +74,15 @@
         "api-rate-limits:0",
         "api-rate-limits:1"
       ],
-      "reviewed": false
+      "reviewed": true
     },
     "q10": {
       "question": "How many requests does a batch call with 100 invoices use against my limit?",
       "expected": "10 requests",
       "gold_chunks": [
-        "api-rate-limits:1",
         "api-rate-limits:4"
       ],
-      "reviewed": false
+      "reviewed": true
     },
     "q11": {
       "question": "How should my client handle HTTP 429 responses?",
@@ -209,10 +208,9 @@
       "question": "Do you support single sign-on?",
       "expected": "SAML SSO on Scale only",
       "gold_chunks": [
-        "pricing-plans:1",
         "security-and-data:4"
       ],
-      "reviewed": false
+      "reviewed": true
     },
     "q27": {
       "question": "What should a customer do when a payment fails with authentication_required?",
@@ -260,7 +258,7 @@
       "gold_chunks": [
         "refund-policy-v2:4"
       ],
-      "reviewed": false
+      "reviewed": true
     },
     "q37": {
       "question": "If I cancel in the middle of the month, will you give back what I paid?",
@@ -346,10 +344,9 @@
       "question": "Can my whole team log in through the company's central login system?",
       "expected": "SAML single sign-on, Scale plan only",
       "gold_chunks": [
-        "pricing-plans:1",
         "security-and-data:4"
       ],
-      "reviewed": false
+      "reviewed": true
     },
     "q48": {
       "question": "We want to try before buying. How long is it and do we need to give payment details?",
