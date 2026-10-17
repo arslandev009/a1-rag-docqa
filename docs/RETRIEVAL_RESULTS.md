@@ -1,12 +1,12 @@
 # Retrieval evaluation
 
-48 labelled questions; metrics are averaged over those with gold source documents.
+60 labelled questions; metrics are averaged over those with gold source documents.
 
 | Mode | hit@1 | hit@3 | hit@5 | recall@5 | MRR | policy violations |
 |---|---|---|---|---|---|---|
 | vector | 1.000 | 1.000 | 1.000 | 0.989 | 1.000 | 0 |
-| keyword | 0.750 | 0.886 | 0.909 | 0.909 | 0.824 | 0 |
-| hybrid | 0.909 | 0.977 | 1.000 | 1.000 | 0.941 | 0 |
+| keyword | 0.795 | 0.886 | 0.909 | 0.909 | 0.847 | 0 |
+| hybrid | 0.955 | 1.000 | 1.000 | 1.000 | 0.973 | 0 |
 
 ## By question type: vector
 
@@ -26,7 +26,7 @@ Top-1 vector cosine, used to choose the abstention threshold in A1.4:
 | Questions | min | median | max |
 |---|---|---|---|
 | answerable | 0.587 | 0.751 | 0.898 |
-| unanswerable | 0.579 | 0.586 | 0.665 |
+| unanswerable | 0.563 | 0.654 | 0.783 |
 
 ## By question type: keyword
 
@@ -37,8 +37,8 @@ Top-1 vector cosine, used to choose the abstention threshold in A1.4:
 | factual | 11 | 1.000 | 0.909 |
 | multi_doc | 3 | 1.000 | 1.000 |
 | negation | 3 | 1.000 | 0.833 |
-| numeric | 10 | 1.000 | 0.950 |
-| paraphrase | 12 | 0.667 | 0.562 |
+| numeric | 10 | 1.000 | 1.000 |
+| paraphrase | 12 | 0.667 | 0.604 |
 | version_conflict | 3 | 1.000 | 0.833 |
 
 Misses (gold document not in top 5):
@@ -56,9 +56,9 @@ Misses (gold document not in top 5):
 | ambiguity | 1 | 1.000 | 1.000 |
 | factual | 11 | 1.000 | 1.000 |
 | multi_doc | 3 | 1.000 | 1.000 |
-| negation | 3 | 1.000 | 0.833 |
+| negation | 3 | 1.000 | 1.000 |
 | numeric | 10 | 1.000 | 1.000 |
-| paraphrase | 12 | 1.000 | 0.826 |
+| paraphrase | 12 | 1.000 | 0.903 |
 | version_conflict | 3 | 1.000 | 1.000 |
 
 Top-1 vector cosine, used to choose the abstention threshold in A1.4:
@@ -66,4 +66,4 @@ Top-1 vector cosine, used to choose the abstention threshold in A1.4:
 | Questions | min | median | max |
 |---|---|---|---|
 | answerable | 0.587 | 0.751 | 0.898 |
-| unanswerable | 0.579 | 0.586 | 0.665 |
+| unanswerable | 0.563 | 0.654 | 0.783 |
