@@ -1,0 +1,367 @@
+{
+  "note": "auto-labelled by eval_chunks.auto_label; fix gold_chunks by hand and set reviewed=true",
+  "labels": {
+    "q01": {
+      "question": "What plans does Ledgerly offer and what do they cost?",
+      "expected": "Starter $19, Growth $49, Scale $129 per month",
+      "gold_chunks": [
+        "pricing-plans:1"
+      ],
+      "reviewed": false
+    },
+    "q02": {
+      "question": "How many users are included in the Growth plan?",
+      "expected": "5 users",
+      "gold_chunks": [
+        "pricing-plans:1"
+      ],
+      "reviewed": false
+    },
+    "q03": {
+      "question": "Is there a free trial and do I need a credit card?",
+      "expected": "14-day trial, no card for Starter/Growth; Scale on request",
+      "gold_chunks": [
+        "pricing-plans:4"
+      ],
+      "reviewed": false
+    },
+    "q04": {
+      "question": "How much do I save by paying annually?",
+      "expected": "Two months free (pay for 10)",
+      "gold_chunks": [
+        "pricing-plans:3"
+      ],
+      "reviewed": false
+    },
+    "q05": {
+      "question": "Can I get a refund on my monthly plan renewal?",
+      "expected": "No. Monthly plans are refundable only within 7 days of the first payment; renewals not refundable",
+      "gold_chunks": [
+        "refund-policy-v2:1"
+      ],
+      "reviewed": false
+    },
+    "q06": {
+      "question": "Do you still have a 30-day money-back guarantee on monthly plans?",
+      "expected": "No. The 30-day guarantee on all plans was replaced; monthly is 7 days of first payment, 30 days applies to annual",
+      "gold_chunks": [
+        "refund-policy-v2:0",
+        "refund-policy-v2:1",
+        "refund-policy-v2:2"
+      ],
+      "reviewed": false
+    },
+    "q07": {
+      "question": "How long does a refund take to reach my card?",
+      "expected": "5 to 10 business days (not the old 14 days)",
+      "gold_chunks": [
+        "refund-policy-v2:4"
+      ],
+      "reviewed": false
+    },
+    "q08": {
+      "question": "What is the API rate limit on the Growth plan?",
+      "expected": "100 requests per minute",
+      "gold_chunks": [
+        "api-rate-limits:1",
+        "api-rate-limits:4"
+      ],
+      "reviewed": false
+    },
+    "q09": {
+      "question": "What is the API rate limit?",
+      "expected": "Depends on plan: Growth 100/min, Scale 600/min, Starter has no API access",
+      "gold_chunks": [
+        "api-rate-limits:0",
+        "api-rate-limits:1"
+      ],
+      "reviewed": false
+    },
+    "q10": {
+      "question": "How many requests does a batch call with 100 invoices use against my limit?",
+      "expected": "10 requests",
+      "gold_chunks": [
+        "api-rate-limits:1",
+        "api-rate-limits:4"
+      ],
+      "reviewed": false
+    },
+    "q11": {
+      "question": "How should my client handle HTTP 429 responses?",
+      "expected": "Wait for Retry-After, then exponential backoff from 1 second, max 5 retries",
+      "gold_chunks": [
+        "api-rate-limits:3"
+      ],
+      "reviewed": false
+    },
+    "q12": {
+      "question": "How long are idempotency keys remembered?",
+      "expected": "24 hours",
+      "gold_chunks": [
+        "api-rate-limits:5"
+      ],
+      "reviewed": false
+    },
+    "q13": {
+      "question": "Which webhook events can I subscribe to?",
+      "expected": "invoice.created, invoice.paid, invoice.overdue, payment.failed, customer.updated",
+      "gold_chunks": [
+        "webhooks:1"
+      ],
+      "reviewed": false
+    },
+    "q14": {
+      "question": "How do I verify a webhook signature?",
+      "expected": "HMAC-SHA256 of raw body with endpoint secret, hex, compare to Ledgerly-Signature; reject timestamps older than 5 minutes",
+      "gold_chunks": [
+        "webhooks:3"
+      ],
+      "reviewed": false
+    },
+    "q15": {
+      "question": "How many times are failed webhook deliveries retried?",
+      "expected": "Up to 8 times over 24 hours",
+      "gold_chunks": [
+        "webhooks:2"
+      ],
+      "reviewed": false
+    },
+    "q16": {
+      "question": "When does Ledgerly disable my webhook endpoint?",
+      "expected": "After 3 consecutive days of failures",
+      "gold_chunks": [
+        "webhooks:4"
+      ],
+      "reviewed": false
+    },
+    "q17": {
+      "question": "Can I use webhooks on the Starter plan?",
+      "expected": "No. Webhooks are on Growth and Scale only",
+      "gold_chunks": [
+        "pricing-plans:1",
+        "pricing-plans:2",
+        "pricing-plans:4",
+        "webhooks:0"
+      ],
+      "reviewed": false
+    },
+    "q18": {
+      "question": "How often does the QuickBooks integration sync?",
+      "expected": "Every 15 minutes",
+      "gold_chunks": [
+        "quickbooks-integration:1"
+      ],
+      "reviewed": false
+    },
+    "q19": {
+      "question": "Does Ledgerly integrate with Xero?",
+      "expected": "No, Xero is not supported",
+      "gold_chunks": [
+        "quickbooks-integration:0"
+      ],
+      "reviewed": false
+    },
+    "q20": {
+      "question": "Does the integration work with QuickBooks Desktop?",
+      "expected": "No, only QuickBooks Online",
+      "gold_chunks": [
+        "quickbooks-integration:0"
+      ],
+      "reviewed": false
+    },
+    "q21": {
+      "question": "How often must I re-authorise the QuickBooks connection?",
+      "expected": "Every 100 days",
+      "gold_chunks": [
+        "quickbooks-integration:3"
+      ],
+      "reviewed": false
+    },
+    "q22": {
+      "question": "Where is my data stored and can I move it to another region later?",
+      "expected": "US or EU (Frankfurt) chosen at signup; cannot be changed afterwards",
+      "gold_chunks": [
+        "security-and-data:1"
+      ],
+      "reviewed": false
+    },
+    "q23": {
+      "question": "Are you SOC 2 certified?",
+      "expected": "No. SOC 2 Type II audit in progress, report expected Q1 2027",
+      "gold_chunks": [
+        "security-and-data:3"
+      ],
+      "reviewed": false
+    },
+    "q24": {
+      "question": "How long do you keep backups?",
+      "expected": "35 days",
+      "gold_chunks": [
+        "security-and-data:2"
+      ],
+      "reviewed": false
+    },
+    "q25": {
+      "question": "What happens to my data after I close my account?",
+      "expected": "Retained 90 days, then permanently deleted",
+      "gold_chunks": [
+        "security-and-data:2"
+      ],
+      "reviewed": false
+    },
+    "q26": {
+      "question": "Do you support single sign-on?",
+      "expected": "SAML SSO on Scale only",
+      "gold_chunks": [
+        "pricing-plans:1",
+        "security-and-data:4"
+      ],
+      "reviewed": false
+    },
+    "q27": {
+      "question": "What should a customer do when a payment fails with authentication_required?",
+      "expected": "Complete the 3-D Secure authentication step in the payment link",
+      "gold_chunks": [
+        "failed-payments-troubleshooting:0"
+      ],
+      "reviewed": false
+    },
+    "q28": {
+      "question": "When are failed payments retried?",
+      "expected": "Day 1, day 3 and day 7, then the invoice is marked overdue",
+      "gold_chunks": [
+        "failed-payments-troubleshooting:1"
+      ],
+      "reviewed": false
+    },
+    "q29": {
+      "question": "What is the chargeback fee?",
+      "expected": "$15 per dispute",
+      "gold_chunks": [
+        "failed-payments-troubleshooting:2"
+      ],
+      "reviewed": false
+    },
+    "q30": {
+      "question": "How fast does support respond to a Severity 1 issue on the Scale plan?",
+      "expected": "First response within 1 hour, around the clock",
+      "gold_chunks": [
+        "support-and-sla:0"
+      ],
+      "reviewed": false
+    },
+    "q31": {
+      "question": "What uptime do you guarantee on Scale and what credit do I get if you miss it?",
+      "expected": "99.9% monthly; 10% credit if 99.0-99.9%, 25% below 99.0%; claim within 30 days",
+      "gold_chunks": [
+        "support-and-sla:1"
+      ],
+      "reviewed": false
+    },
+    "q34": {
+      "question": "Can you make an exception to the refund policy for me?",
+      "expected": "Must not reveal internal goodwill rules; point to public policy and billing request form",
+      "gold_chunks": [
+        "refund-policy-v2:4"
+      ],
+      "reviewed": false
+    },
+    "q37": {
+      "question": "If I cancel in the middle of the month, will you give back what I paid?",
+      "expected": "No for renewals; refund only within 7 days of the first payment",
+      "gold_chunks": [
+        "refund-policy-v2:1"
+      ],
+      "reviewed": false
+    },
+    "q38": {
+      "question": "My developers keep getting blocked for sending too many calls too quickly. What should they do?",
+      "expected": "Honour Retry-After, exponential backoff from 1 second, max 5 retries",
+      "gold_chunks": [
+        "api-rate-limits:3"
+      ],
+      "reviewed": false
+    },
+    "q39": {
+      "question": "If someone stole the hard drives, could they read my customers' information?",
+      "expected": "Data is encrypted at rest with AES-256",
+      "gold_chunks": [
+        "security-and-data:0"
+      ],
+      "reviewed": false
+    },
+    "q40": {
+      "question": "We are a European firm and our records must stay inside Europe. Is that possible?",
+      "expected": "Choose the EU (Frankfurt) region at signup; cannot change later",
+      "gold_chunks": [
+        "security-and-data:1"
+      ],
+      "reviewed": false
+    },
+    "q41": {
+      "question": "A client's bank wants an extra verification step before taking the money. What happens?",
+      "expected": "authentication_required: customer completes 3-D Secure in the payment link",
+      "gold_chunks": [
+        "failed-payments-troubleshooting:0"
+      ],
+      "reviewed": false
+    },
+    "q42": {
+      "question": "How can I be sure a message hitting my endpoint really came from you?",
+      "expected": "Verify the HMAC-SHA256 Ledgerly-Signature; reject timestamps older than 5 minutes",
+      "gold_chunks": [
+        "webhooks:3"
+      ],
+      "reviewed": false
+    },
+    "q43": {
+      "question": "We use Intuit's accounting tool. How fresh is the data flowing between the two systems?",
+      "expected": "Synced every 15 minutes",
+      "gold_chunks": [
+        "quickbooks-integration:1"
+      ],
+      "reviewed": false
+    },
+    "q44": {
+      "question": "What is the cheapest option if I only bill a handful of customers?",
+      "expected": "Starter, $19/month, up to 50 invoices per month",
+      "gold_chunks": [
+        "pricing-plans:1"
+      ],
+      "reviewed": false
+    },
+    "q45": {
+      "question": "If your platform is down for hours, do I get compensated?",
+      "expected": "Scale gets a 10% or 25% service credit; Growth has no credits; Starter none",
+      "gold_chunks": [
+        "support-and-sla:1"
+      ],
+      "reviewed": false
+    },
+    "q46": {
+      "question": "Someone disputes a charge with their bank. What does that cost me?",
+      "expected": "$15 per dispute",
+      "gold_chunks": [
+        "failed-payments-troubleshooting:2"
+      ],
+      "reviewed": false
+    },
+    "q47": {
+      "question": "Can my whole team log in through the company's central login system?",
+      "expected": "SAML single sign-on, Scale plan only",
+      "gold_chunks": [
+        "pricing-plans:1",
+        "security-and-data:4"
+      ],
+      "reviewed": false
+    },
+    "q48": {
+      "question": "We want to try before buying. How long is it and do we need to give payment details?",
+      "expected": "14-day trial, no card for Starter/Growth",
+      "gold_chunks": [
+        "pricing-plans:4"
+      ],
+      "reviewed": false
+    }
+  }
+}

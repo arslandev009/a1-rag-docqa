@@ -72,6 +72,8 @@ def main(argv: list[str] | None = None) -> int:
     pv.add_argument("--only", default=None, help="comma separated question ids, e.g. q05,q06")
     pv.add_argument("--fresh", action="store_true", help="ignore saved answers for this provider/model and start again")
     sub.add_parser("compare", help="build docs/RESULTS.md from all saved eval-answers summaries")
+    pc = sub.add_parser("eval-chunks", help="chunk-level retrieval eval + context sweep (gold chunks auto-labelled, see data/eval/gold_chunks.json)")
+    pc.add_argument("--relabel", action="store_true", help="regenerate data/eval/gold_chunks.json (overwrites hand edits)")
     sub.add_parser("diagnose", help="for every failed question show what was retrieved and which gold chunks were missing")
     args = p.parse_args(argv)
 
@@ -177,6 +179,15 @@ def main(argv: list[str] | None = None) -> int:
             (ROOT / "docs").mkdir(exist_ok=True)
             print("\n" + eval_answers.compare_markdown([summary]))
             print(f"saved: results/answers_{tag}.jsonl, results/summary_{tag}.json (run `docqa compare` for the table)")
+            return 0
+
+        if args.cmd == "eval-chunks":
+            from . import eval_chunks
+
+            md = eval_chunks.run(store, emb, questions, vecs, ROOT / "data" / "eval" / "gold_chunks.json", relabel=args.relabel)
+            (ROOT / "docs" / "CHUNK_EVAL.md").write_text(md, encoding="utf-8")
+            print(md)
+            print("saved: docs/CHUNK_EVAL.md and data/eval/gold_chunks.json")
             return 0
 
         if args.cmd == "tune-retrieval":
