@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      db:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: docqa
+          POSTGRES_PASSWORD: docqa_dev_password
+          POSTGRES_DB: docqa
+        ports:
+          - 55433:5432   # same host port as docker-compose.yml, so the tests' default DATABASE_URL works
+        options: >-
+          --health-cmd "pg_isready -U docqa -d docqa"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install llm-client (its own public repo) and docqa
+        run: |
+          pip install "git+https://github.com/${{ github.repository_owner }}/llm-client.git"
+          pip install -e ".[dev,api]"
+      - name: Lint (syntax errors and pyflakes only)
+        run: ruff check src tests --select E9,F
+      - name: Tests (database tests run against the service container)
+        run: pytest -q

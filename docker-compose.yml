@@ -1,0 +1,44 @@
+# Local Postgres with pgvector (+ the API as an optional profile). Dev credentials only; never reuse in production.
+# Database published on 127.0.0.1:55433 (an unusual port) so it cannot collide with a Windows-installed Postgres.
+#
+#   docker compose up -d                       -> database only (tests, docqa CLI)
+#   docker compose --profile app up -d --build -> database + API on http://127.0.0.1:8000
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: docqa-db
+    environment:
+      POSTGRES_USER: docqa
+      POSTGRES_PASSWORD: docqa_dev_password
+      POSTGRES_DB: docqa
+    ports:
+      - "127.0.0.1:55433:5432"
+    volumes:
+      - docqa_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U docqa -d docqa"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    profiles: ["app"]
+    container_name: docqa-api
+    build:
+      context: ../..                                   # workspace root: needs packages/llm-client too
+      dockerfile: projects/a1-rag-docqa/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - ../../.env                                     # provider API keys (never baked into the image)
+    environment:
+      DATABASE_URL: postgresql://docqa:docqa_dev_password@db:5432/docqa
+      LLM_PRICES_FILE: /app/projects/a1-rag-docqa/prices.json
+      LLM_LOG_PATH: /tmp/llm_calls.jsonl
+      GATEWAY_SECRET: ${GATEWAY_SECRET:-}
+    ports:
+      - "127.0.0.1:8000:8000"
+
+volumes:
+  docqa_pgdata:

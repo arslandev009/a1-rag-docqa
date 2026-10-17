@@ -1,0 +1,261 @@
+{
+  "tag": "groq_openai-gpt-oss-120b",
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "judges": {
+    "gemini": {
+      "answer_accuracy": 0.136,
+      "judged": 6
+    },
+    "groq": {
+      "answer_accuracy": 0.045,
+      "judged": 2
+    }
+  },
+  "judge_agreement": 1.0,
+  "questions": 60,
+  "answer_accuracy": 0.136,
+  "false_abstain_rate": 0.864,
+  "abstention_accuracy": 1.0,
+  "probe_pass_rate": 1.0,
+  "citation_hit_rate": 1.0,
+  "grounded_rate": 1.0,
+  "leaks": [],
+  "unjudged": 0,
+  "latency_p50_s": 56.59,
+  "latency_p95_s": 117.28,
+  "avg_prompt_tokens": 136,
+  "avg_completion_tokens": 31,
+  "cost_per_1k_answers_usd": 0.039,
+  "llm_calls_saved_by_gates": 50,
+  "failures": [
+    {
+      "id": "q01",
+      "type": "factual",
+      "question": "What plans does Ledgerly offer and what do they cost?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q03",
+      "type": "factual",
+      "question": "Is there a free trial and do I need a credit card?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q04",
+      "type": "factual",
+      "question": "How much do I save by paying annually?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q05",
+      "type": "version_conflict",
+      "question": "Can I get a refund on my monthly plan renewal?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q06",
+      "type": "version_conflict",
+      "question": "Do you still have a 30-day money-back guarantee on monthly plans?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q07",
+      "type": "version_conflict",
+      "question": "How long does a refund take to reach my card?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q08",
+      "type": "numeric",
+      "question": "What is the API rate limit on the Growth plan?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q10",
+      "type": "numeric",
+      "question": "How many requests does a batch call with 100 invoices use against my limit?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q11",
+      "type": "factual",
+      "question": "How should my client handle HTTP 429 responses?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q12",
+      "type": "numeric",
+      "question": "How long are idempotency keys remembered?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q13",
+      "type": "factual",
+      "question": "Which webhook events can I subscribe to?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q14",
+      "type": "factual",
+      "question": "How do I verify a webhook signature?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q16",
+      "type": "factual",
+      "question": "When does Ledgerly disable my webhook endpoint?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q17",
+      "type": "multi_doc",
+      "question": "Can I use webhooks on the Starter plan?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q18",
+      "type": "numeric",
+      "question": "How often does the QuickBooks integration sync?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q19",
+      "type": "negation",
+      "question": "Does Ledgerly integrate with Xero?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q20",
+      "type": "negation",
+      "question": "Does the integration work with QuickBooks Desktop?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q22",
+      "type": "factual",
+      "question": "Where is my data stored and can I move it to another region later?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q23",
+      "type": "negation",
+      "question": "Are you SOC 2 certified?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q24",
+      "type": "numeric",
+      "question": "How long do you keep backups?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q25",
+      "type": "factual",
+      "question": "What happens to my data after I close my account?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q27",
+      "type": "factual",
+      "question": "What should a customer do when a payment fails with authentication_required?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q28",
+      "type": "factual",
+      "question": "When are failed payments retried?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q29",
+      "type": "numeric",
+      "question": "What is the chargeback fee?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q30",
+      "type": "numeric",
+      "question": "How fast does support respond to a Severity 1 issue on the Scale plan?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q31",
+      "type": "multi_doc",
+      "question": "What uptime do you guarantee on Scale and what credit do I get if you miss it?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q34",
+      "type": "access_control",
+      "question": "Can you make an exception to the refund policy for me?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q38",
+      "type": "paraphrase",
+      "question": "My developers keep getting blocked for sending too many calls too quickly. What should they do?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q39",
+      "type": "paraphrase",
+      "question": "If someone stole the hard drives, could they read my customers' information?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q40",
+      "type": "paraphrase",
+      "question": "We are a European firm and our records must stay inside Europe. Is that possible?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q41",
+      "type": "paraphrase",
+      "question": "A client's bank wants an extra verification step before taking the money. What happens?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q42",
+      "type": "paraphrase",
+      "question": "How can I be sure a message hitting my endpoint really came from you?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q43",
+      "type": "paraphrase",
+      "question": "We use Intuit's accounting tool. How fresh is the data flowing between the two systems?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q44",
+      "type": "paraphrase",
+      "question": "What is the cheapest option if I only bill a handful of customers?",
+      "why": "false abstention (not_in_sources)"
+    },
+    {
+      "id": "q45",
+      "type": "paraphrase",
+      "question": "If your platform is down for hours, do I get compensated?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q46",
+      "type": "paraphrase",
+      "question": "Someone disputes a charge with their bank. What does that cost me?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q47",
+      "type": "paraphrase",
+      "question": "Can my whole team log in through the company's central login system?",
+      "why": "false abstention (llm_error)"
+    },
+    {
+      "id": "q48",
+      "type": "paraphrase",
+      "question": "We want to try before buying. How long is it and do we need to give payment details?",
+      "why": "false abstention (llm_error)"
+    }
+  ]
+}

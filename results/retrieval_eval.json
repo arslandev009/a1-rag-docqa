@@ -1,0 +1,253 @@
+{
+  "ks": [
+    1,
+    3,
+    5
+  ],
+  "questions": 48,
+  "modes": {
+    "vector": {
+      "scored_questions": 44,
+      "metrics": {
+        "hit@1": 1.0,
+        "recall@1": 0.966,
+        "hit@3": 1.0,
+        "recall@3": 0.989,
+        "hit@5": 1.0,
+        "recall@5": 0.989,
+        "mrr": 1.0
+      },
+      "by_type": {
+        "access_control": {
+          "n": 1,
+          "hit@5": 1.0,
+          "mrr": 1.0
+        },
+        "ambiguity": {
+          "n": 1,
+          "hit@5": 1.0,
+          "mrr": 1.0
+        },
+        "factual": {
+          "n": 11,
+          "hit@5": 1.0,
+          "mrr": 1.0
+        },
+        "multi_doc": {
+          "n": 3,
+          "hit@5": 1.0,
+          "mrr": 1.0
+        },
+        "negation": {
+          "n": 3,
+          "hit@5": 1.0,
+          "mrr": 1.0
+        },
+        "numeric": {
+          "n": 10,
+          "hit@5": 1.0,
+          "mrr": 1.0
+        },
+        "paraphrase": {
+          "n": 12,
+          "hit@5": 1.0,
+          "mrr": 1.0
+        },
+        "version_conflict": {
+          "n": 3,
+          "hit@5": 1.0,
+          "mrr": 1.0
+        }
+      },
+      "policy_violations": 0,
+      "failures": [],
+      "vector_top1_cosine": {
+        "answerable": {
+          "min": 0.587,
+          "median": 0.751,
+          "max": 0.898
+        },
+        "unanswerable": {
+          "min": 0.579,
+          "median": 0.586,
+          "max": 0.665
+        }
+      }
+    },
+    "keyword": {
+      "scored_questions": 44,
+      "metrics": {
+        "hit@1": 0.75,
+        "recall@1": 0.727,
+        "hit@3": 0.886,
+        "recall@3": 0.886,
+        "hit@5": 0.909,
+        "recall@5": 0.909,
+        "mrr": 0.824
+      },
+      "by_type": {
+        "access_control": {
+          "n": 1,
+          "hit@5": 1.0,
+          "mrr": 1.0
+        },
+        "ambiguity": {
+          "n": 1,
+          "hit@5": 1.0,
+          "mrr": 1.0
+        },
+        "factual": {
+          "n": 11,
+          "hit@5": 1.0,
+          "mrr": 0.909
+        },
+        "multi_doc": {
+          "n": 3,
+          "hit@5": 1.0,
+          "mrr": 1.0
+        },
+        "negation": {
+          "n": 3,
+          "hit@5": 1.0,
+          "mrr": 0.833
+        },
+        "numeric": {
+          "n": 10,
+          "hit@5": 1.0,
+          "mrr": 0.95
+        },
+        "paraphrase": {
+          "n": 12,
+          "hit@5": 0.667,
+          "mrr": 0.562
+        },
+        "version_conflict": {
+          "n": 3,
+          "hit@5": 1.0,
+          "mrr": 0.833
+        }
+      },
+      "policy_violations": 0,
+      "failures": [
+        {
+          "id": "q39",
+          "question": "If someone stole the hard drives, could they read my customers' information?",
+          "gold": [
+            "security-and-data"
+          ],
+          "got": [
+            "failed-payments-troubleshooting:0",
+            "quickbooks-integration:1",
+            "failed-payments-troubleshooting:1",
+            "refund-policy-v2:2"
+          ]
+        },
+        {
+          "id": "q43",
+          "question": "We use Intuit's accounting tool. How fresh is the data flowing between the two systems?",
+          "gold": [
+            "quickbooks-integration"
+          ],
+          "got": [
+            "security-and-data:1",
+            "security-and-data:2",
+            "failed-payments-troubleshooting:0",
+            "security-and-data:0",
+            "security-and-data:3"
+          ]
+        },
+        {
+          "id": "q47",
+          "question": "Can my whole team log in through the company's central login system?",
+          "gold": [
+            "security-and-data",
+            "pricing-plans"
+          ],
+          "got": []
+        },
+        {
+          "id": "q48",
+          "question": "We want to try before buying. How long is it and do we need to give payment details?",
+          "gold": [
+            "pricing-plans"
+          ],
+          "got": [
+            "failed-payments-troubleshooting:0",
+            "failed-payments-troubleshooting:1",
+            "refund-policy-v2:1",
+            "quickbooks-integration:1",
+            "refund-policy-v2:0"
+          ]
+        }
+      ]
+    },
+    "hybrid": {
+      "scored_questions": 44,
+      "metrics": {
+        "hit@1": 0.909,
+        "recall@1": 0.875,
+        "hit@3": 0.977,
+        "recall@3": 0.977,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "mrr": 0.941
+      },
+      "by_type": {
+        "access_control": {
+          "n": 1,
+          "hit@5": 1.0,
+          "mrr": 1.0
+        },
+        "ambiguity": {
+          "n": 1,
+          "hit@5": 1.0,
+          "mrr": 1.0
+        },
+        "factual": {
+          "n": 11,
+          "hit@5": 1.0,
+          "mrr": 1.0
+        },
+        "multi_doc": {
+          "n": 3,
+          "hit@5": 1.0,
+          "mrr": 1.0
+        },
+        "negation": {
+          "n": 3,
+          "hit@5": 1.0,
+          "mrr": 0.833
+        },
+        "numeric": {
+          "n": 10,
+          "hit@5": 1.0,
+          "mrr": 1.0
+        },
+        "paraphrase": {
+          "n": 12,
+          "hit@5": 1.0,
+          "mrr": 0.826
+        },
+        "version_conflict": {
+          "n": 3,
+          "hit@5": 1.0,
+          "mrr": 1.0
+        }
+      },
+      "policy_violations": 0,
+      "failures": [],
+      "vector_top1_cosine": {
+        "answerable": {
+          "min": 0.587,
+          "median": 0.751,
+          "max": 0.898
+        },
+        "unanswerable": {
+          "min": 0.579,
+          "median": 0.586,
+          "max": 0.665
+        }
+      }
+    }
+  }
+}

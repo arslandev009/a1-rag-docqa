@@ -1,0 +1,18 @@
+# Whitelist: the build context is the whole workspace, so exclude everything and re-include only what is needed.
+# This keeps .env (API keys!) and .venv out of the image.
+*
+!packages/llm-client
+!projects/a1-rag-docqa
+
+**/.env
+**/.venv
+**/.git
+**/__pycache__
+**/.pytest_cache
+**/.cache
+**/*.egg-info
+**/node_modules
+**/llm_calls.jsonl
+projects/a1-rag-docqa/results
+projects/a1-rag-docqa/docs
+projects/a1-rag-docqa/tests
