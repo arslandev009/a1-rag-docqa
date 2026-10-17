@@ -4,7 +4,7 @@ Same retrieval, same prompt, same labelled questions; only the answering model c
 
 | Provider / model | answer accuracy | false abstain | abstention acc. | probe pass | citation hit | grounded | leaks | p50 s | p95 s | avg tokens in/out | $ per 1k answers |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| gemini/gemini-3.5-flash-lite | 93% | 4% | 100% | 100% | 100% | 100% | 0 | 1.67 | 2.2 | 788/75 | 0.424 |
+| gemini/gemini-3.5-flash-lite | 100% | 0% | 100% | 100% | 100% | 100% | 0 | 1.76 | 2.2 | 775/77 | 0.426 |
 | groq/openai/gpt-oss-120b | 14% | 86% | 100% | 100% | 100% | 100% | 0 | 56.59 | 117.28 | 136/31 | 0.039 |
 
 ## Judge cross-check
@@ -13,16 +13,14 @@ Every answer is graded by each judge. The headline accuracy above uses a judge f
 
 | Answerer | judge | answer accuracy per this judge | judges agree on |
 |---|---|---|---|
-| gemini/gemini-3.5-flash-lite | gemini | 93% | 95% |
-| gemini/gemini-3.5-flash-lite | groq | 91% | 95% |
+| gemini/gemini-3.5-flash-lite | gemini | 100% | 100% |
+| gemini/gemini-3.5-flash-lite | groq | 100% | 100% |
 | groq/openai/gpt-oss-120b | gemini | 14% | 100% |
 | groq/openai/gpt-oss-120b | groq | 4% | 100% |
 
 ## Failures: gemini/gemini-3.5-flash-lite
 
-- q06 (version_conflict): Do you still have a 30-day money-back guarantee on monthly plans?  ->  judged incorrect: Answer omits the annual 30‑day guarantee detail required by expected answer
-- q44 (paraphrase): What is the cheapest option if I only bill a handful of customers?  ->  false abstention (not_in_sources)
-- q48 (paraphrase): We want to try before buying. How long is it and do we need to give payment details?  ->  false abstention (not_in_sources)
+- none
 
 ## Failures: groq/openai/gpt-oss-120b
 

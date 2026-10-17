@@ -4,48 +4,29 @@
   "model": "gemini-3.5-flash-lite",
   "judges": {
     "gemini": {
-      "answer_accuracy": 0.932,
-      "judged": 42
+      "answer_accuracy": 1.0,
+      "judged": 44
     },
     "groq": {
-      "answer_accuracy": 0.909,
-      "judged": 41
+      "answer_accuracy": 1.0,
+      "judged": 44
     }
   },
-  "judge_agreement": 0.951,
+  "judge_agreement": 1.0,
   "questions": 60,
-  "answer_accuracy": 0.932,
-  "false_abstain_rate": 0.045,
+  "answer_accuracy": 1.0,
+  "false_abstain_rate": 0.0,
   "abstention_accuracy": 1.0,
   "probe_pass_rate": 1.0,
   "citation_hit_rate": 1.0,
   "grounded_rate": 1.0,
   "leaks": [],
   "unjudged": 0,
-  "latency_p50_s": 1.67,
+  "latency_p50_s": 1.76,
   "latency_p95_s": 2.2,
-  "avg_prompt_tokens": 788,
-  "avg_completion_tokens": 75,
-  "cost_per_1k_answers_usd": 0.424,
+  "avg_prompt_tokens": 775,
+  "avg_completion_tokens": 77,
+  "cost_per_1k_answers_usd": 0.426,
   "llm_calls_saved_by_gates": 1,
-  "failures": [
-    {
-      "id": "q06",
-      "type": "version_conflict",
-      "question": "Do you still have a 30-day money-back guarantee on monthly plans?",
-      "why": "judged incorrect: Answer omits the annual 30\u2011day guarantee detail required by expected answer"
-    },
-    {
-      "id": "q44",
-      "type": "paraphrase",
-      "question": "What is the cheapest option if I only bill a handful of customers?",
-      "why": "false abstention (not_in_sources)"
-    },
-    {
-      "id": "q48",
-      "type": "paraphrase",
-      "question": "We want to try before buying. How long is it and do we need to give payment details?",
-      "why": "false abstention (not_in_sources)"
-    }
-  ]
+  "failures": []
 }
