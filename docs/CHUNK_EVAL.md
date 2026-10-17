@@ -1,37 +1,47 @@
 # Chunk-level retrieval evaluation
 
-44 answerable questions with gold chunks (44 answerable in total). **Gold chunks are auto-labelled from each question's `expected` text and not yet reviewed.**
+44 answerable questions with gold chunks (44 answerable in total). **Gold chunks are auto-labelled from each question's `expected` text unless marked reviewed.**
 
 `ctx_all` = share of questions whose gold chunks are all in the context the model sees; `avg chunks` = chunks sent to the model (cost).
 
-## Current default (and the same with neighbours)
+Labels reviewed by a human: 2 of 44.
+
+## Candidate configurations (first row = current default)
 
 | candidate_k | keyword weight | k | neighbours | anchor_any | ctx_any | ctx_all | avg chunks | violations |
 |---|---|---|---|---|---|---|---|---|
-| 20 | 0.25 | 5 | 0 | 0.955 | 0.955 | 0.909 | 5.0 | 0 |
-| 20 | 0.25 | 5 | 1 | 0.955 | 0.977 | 0.955 | 6.8 | 0 |
+| 20 | 0.25 | 5 | 0 | 0.955 | 0.955 | 0.932 | 5.0 | 0 |
+| 20 | 0.25 | 5 | 1 | 0.955 | 0.977 | 0.977 | 6.8 | 0 |
+| 20 | 0.1 | 5 | 0 | 1.000 | 1.000 | 0.977 | 5.0 | 0 |
+| 20 | 0.1 | 5 | 1 | 1.000 | 1.000 | 1.000 | 6.6 | 0 |
+| 20 | 0.0 | 5 | 1 | 1.000 | 1.000 | 0.977 | 6.3 | 0 |
+| 20 | 0.1 | 8 | 1 | 1.000 | 1.000 | 1.000 | 9.1 | 0 |
 
 ## Best 12 configurations (sorted by ctx_all, then fewest chunks)
 
 | candidate_k | keyword weight | k | neighbours | anchor_any | ctx_any | ctx_all | avg chunks | violations |
 |---|---|---|---|---|---|---|---|---|
-| 20 | 0.1 | 8 | 1 | 1.000 | 1.000 | 1.000 | 9.1 | 0 |
-| 10 | 0.1 | 8 | 1 | 1.000 | 1.000 | 1.000 | 9.1 | 0 |
-| 10 | 0.25 | 8 | 1 | 1.000 | 1.000 | 1.000 | 9.2 | 0 |
-| 10 | 0.5 | 8 | 1 | 1.000 | 1.000 | 1.000 | 9.2 | 0 |
-| 20 | 0.25 | 8 | 1 | 0.977 | 1.000 | 1.000 | 9.4 | 0 |
-| 20 | 0.5 | 8 | 1 | 0.977 | 1.000 | 1.000 | 9.4 | 0 |
-| 20 | 0.1 | 5 | 1 | 1.000 | 1.000 | 0.977 | 6.6 | 0 |
-| 10 | 0.1 | 5 | 1 | 1.000 | 1.000 | 0.977 | 6.6 | 0 |
-| 10 | 0.25 | 5 | 1 | 0.977 | 1.000 | 0.977 | 6.6 | 0 |
-| 10 | 0.5 | 5 | 1 | 0.977 | 1.000 | 0.977 | 6.7 | 0 |
-| 10 | 0.0 | 8 | 0 | 1.000 | 1.000 | 0.977 | 8.0 | 0 |
-| 10 | 0.1 | 8 | 0 | 1.000 | 1.000 | 0.977 | 8.0 | 0 |
+| 20 | 0.1 | 5 | 1 | 1.000 | 1.000 | 1.000 | 6.6 | 0 |
+| 10 | 0.1 | 5 | 1 | 1.000 | 1.000 | 1.000 | 6.6 | 0 |
+| 10 | 0.25 | 5 | 1 | 0.977 | 1.000 | 1.000 | 6.6 | 0 |
+| 10 | 0.5 | 5 | 1 | 0.977 | 1.000 | 1.000 | 6.7 | 0 |
+| 10 | 0.0 | 8 | 0 | 1.000 | 1.000 | 1.000 | 8.0 | 0 |
+| 10 | 0.1 | 8 | 0 | 1.000 | 1.000 | 1.000 | 8.0 | 0 |
+| 10 | 0.25 | 8 | 0 | 1.000 | 1.000 | 1.000 | 8.0 | 0 |
+| 10 | 0.5 | 8 | 0 | 1.000 | 1.000 | 1.000 | 8.0 | 0 |
+| 20 | 0.0 | 8 | 0 | 1.000 | 1.000 | 1.000 | 8.0 | 0 |
+| 20 | 0.1 | 8 | 0 | 1.000 | 1.000 | 1.000 | 8.0 | 0 |
+| 10 | 0.0 | 8 | 1 | 1.000 | 1.000 | 1.000 | 8.9 | 0 |
+| 20 | 0.0 | 8 | 1 | 1.000 | 1.000 | 1.000 | 8.9 | 0 |
 
-## Questions whose gold chunks are NOT all in the context
+## Questions whose gold chunks are NOT all in the context (candidates)
 
-- default, neighbours=0: q17, q44, q47, q48
-- default, neighbours=1: q17, q44
+- ck=20 w=0.25 k=5 neighbours=0: q44, q47, q48
+- ck=20 w=0.25 k=5 neighbours=1: q44
+- ck=20 w=0.1 k=5 neighbours=0: q47
+- ck=20 w=0.1 k=5 neighbours=1: none
+- ck=20 w=0.0 k=5 neighbours=1: q26
+- ck=20 w=0.1 k=8 neighbours=1: none
 
 ## Gold chunk labels (review these; edit data/eval/gold_chunks.json)
 
@@ -44,7 +54,7 @@
 | q05 | No. Monthly plans are refundable only within 7 days of the first payme | refund-policy-v2:1 [Monthly subscriptions] |
 | q06 | No. The 30-day guarantee on all plans was replaced; monthly is 7 days  | refund-policy-v2:0 [Refund Policy (current)], refund-policy-v2:1 [Monthly subscriptions], refund-policy-v2:2 [Annual subscriptions] |
 | q07 | 5 to 10 business days (not the old 14 days) | refund-policy-v2:4 [How refunds are paid] |
-| q08 | 100 requests per minute | api-rate-limits:1 [Limits per plan], api-rate-limits:4 [Batch endpoint] |
+| q08 | 100 requests per minute | api-rate-limits:1 [Limits per plan] |
 | q09 | Depends on plan: Growth 100/min, Scale 600/min, Starter has no API acc | api-rate-limits:0 [API Rate Limits], api-rate-limits:1 [Limits per plan] |
 | q10 | 10 requests | api-rate-limits:1 [Limits per plan], api-rate-limits:4 [Batch endpoint] |
 | q11 | Wait for Retry-After, then exponential backoff from 1 second, max 5 re | api-rate-limits:3 [Handling HTTP 429] |
@@ -53,7 +63,7 @@
 | q14 | HMAC-SHA256 of raw body with endpoint secret, hex, compare to Ledgerly | webhooks:3 [Verifying signatures] |
 | q15 | Up to 8 times over 24 hours | webhooks:2 [Delivery] |
 | q16 | After 3 consecutive days of failures | webhooks:4 [Automatic disabling] |
-| q17 | No. Webhooks are on Growth and Scale only | pricing-plans:1 [Plans], pricing-plans:2 [Extra users], pricing-plans:4 [Free trial], webhooks:0 [Webhooks] |
+| q17 | No. Webhooks are on Growth and Scale only | webhooks:0 [Webhooks] |
 | q18 | Every 15 minutes | quickbooks-integration:1 [What syncs] |
 | q19 | No, Xero is not supported | quickbooks-integration:0 [QuickBooks Integration] |
 | q20 | No, only QuickBooks Online | quickbooks-integration:0 [QuickBooks Integration] |

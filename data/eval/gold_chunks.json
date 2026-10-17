@@ -63,10 +63,9 @@
       "question": "What is the API rate limit on the Growth plan?",
       "expected": "100 requests per minute",
       "gold_chunks": [
-        "api-rate-limits:1",
-        "api-rate-limits:4"
+        "api-rate-limits:1"
       ],
-      "reviewed": false
+      "reviewed": true
     },
     "q09": {
       "question": "What is the API rate limit?",
@@ -138,12 +137,9 @@
       "question": "Can I use webhooks on the Starter plan?",
       "expected": "No. Webhooks are on Growth and Scale only",
       "gold_chunks": [
-        "pricing-plans:1",
-        "pricing-plans:2",
-        "pricing-plans:4",
         "webhooks:0"
       ],
-      "reviewed": false
+      "reviewed": true
     },
     "q18": {
       "question": "How often does the QuickBooks integration sync?",

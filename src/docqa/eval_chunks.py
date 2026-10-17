@@ -146,8 +146,12 @@ _HEAD = ["| candidate_k | keyword weight | k | neighbours | anchor_any | ctx_any
          "|---|---|---|---|---|---|---|---|---|"]
 
 
+# configurations always shown (candidate_k, keyword weight, k, neighbours); the first one is the current default
+WATCH = [(20, 0.25, 5, 0), (20, 0.25, 5, 1), (20, 0.1, 5, 0), (20, 0.1, 5, 1), (20, 0.0, 5, 1), (20, 0.1, 8, 1)]
+
+
 def run(store, embedder, questions: Sequence[dict], vecs: dict[str, list[float]], labels_path: Path, *,
-        relabel: bool = False, default: tuple[int, float, int] = (20, 0.25, 5)) -> str:
+        relabel: bool = False) -> str:
     labels = labels_for(labels_path, store, questions, relabel)
     docs = sorted({d for q in questions for d in q.get("sources", [])})
     heads = {c["chunk_id"]: c["heading_path"].split(" > ")[-1] for c in fetch_public_chunks(store, docs)}
@@ -157,27 +161,23 @@ def run(store, embedder, questions: Sequence[dict], vecs: dict[str, list[float]]
 
     lines = ["# Chunk-level retrieval evaluation", "",
              f"{n} answerable questions with gold chunks ({len(labels)} answerable in total). "
-             "**Gold chunks are auto-labelled from each question's `expected` text and not yet reviewed.**", "",
+             "**Gold chunks are auto-labelled from each question's `expected` text unless marked reviewed.**", "",
              "`ctx_all` = share of questions whose gold chunks are all in the context the model sees; "
              "`avg chunks` = chunks sent to the model (cost).", ""]
     if unlabeled:
         lines += [f"No gold chunk could be derived for: {', '.join(unlabeled)} (excluded).", ""]
 
-    lines += ["## Current default (and the same with neighbours)", ""] + _HEAD
-    dck, dw, dk = default
-    for rad in (0, 1):
-        for r in rows:
-            if (r["candidate_k"], r["keyword_weight"], r["k"], r["neighbors"]) == (dck, dw, dk, rad):
-                lines.append(_row(r))
+    by = {(r["candidate_k"], r["keyword_weight"], r["k"], r["neighbors"]): r for r in rows}
+    watch = [by[w] for w in WATCH if w in by]
+    reviewed = sum(1 for v in labels.values() if v.get("reviewed"))
+    lines += [f"Labels reviewed by a human: {reviewed} of {len(labels)}.", "",
+              "## Candidate configurations (first row = current default)", ""] + _HEAD
+    lines += [_row(r) for r in watch]
     lines += ["", "## Best 12 configurations (sorted by ctx_all, then fewest chunks)", ""] + _HEAD
     lines += [_row(r) for r in rows[:12]]
-
-    lines += ["", "## Questions whose gold chunks are NOT all in the context", ""]
-    for rad in (0, 1):
-        for r in rows:
-            if (r["candidate_k"], r["keyword_weight"], r["k"], r["neighbors"]) == (dck, dw, dk, rad):
-                lines.append(f"- default, neighbours={rad}: {', '.join(r['missing']) or 'none'}")
-
+    lines += ["", "## Questions whose gold chunks are NOT all in the context (candidates)", ""]
+    lines += [f"- ck={r['candidate_k']} w={r['keyword_weight']} k={r['k']} neighbours={r['neighbors']}: "
+              f"{', '.join(r['missing']) or 'none'}" for r in watch]
     lines += ["", "## Gold chunk labels (review these; edit data/eval/gold_chunks.json)", "",
               "| id | expected | gold chunks |", "|---|---|---|"]
     for qid, v in labels.items():
