@@ -46,7 +46,7 @@ def load_settings() -> Settings:
         chunk_max_chars=int(os.getenv("CHUNK_MAX_CHARS", "1200")),
         chunk_overlap_sentences=int(os.getenv("CHUNK_OVERLAP_SENTENCES", "1")),
         candidate_k=int(os.getenv("RETRIEVAL_CANDIDATE_K", "20")),
-        keyword_weight=float(os.getenv("RETRIEVAL_KEYWORD_WEIGHT", "0.25")),
+        keyword_weight=float(os.getenv("RETRIEVAL_KEYWORD_WEIGHT", "0.1")),
         answer_k=int(os.getenv("ANSWER_K", "5")),
         abstain_min_cosine=float(os.getenv("ABSTAIN_MIN_COSINE", "0.55")),
         answer_max_tokens=int(os.getenv("ANSWER_MAX_TOKENS", "1500")),
