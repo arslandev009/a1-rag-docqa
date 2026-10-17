@@ -4,12 +4,15 @@ In the shared demo-api, do not use this file: mount `docqa.api.router` under /a1
 """
 from __future__ import annotations
 
+import logging
 import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .api import router
+
+logging.basicConfig(level=os.getenv("LOG_LEVEL", "INFO"), format="%(levelname)s %(name)s: %(message)s")
 
 
 def create_app() -> FastAPI:

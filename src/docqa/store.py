@@ -208,6 +208,22 @@ class Store:
         ).fetchall()
         return [_hit(r) for r in rows]
 
+    def neighbors(self, chunk_ids: Sequence[str], radius: int = 1,
+                  audiences: Sequence[str] = ("public",), statuses: Sequence[str] = ("current",)) -> list[Hit]:
+        """Chunks within `radius` positions of the given chunks: same document, same access filter as search."""
+        if not chunk_ids or radius <= 0:
+            return []
+        rows = self.conn.execute(
+            f"""SELECT {_HIT_COLS}, 0.0 AS score
+                FROM chunks a
+                JOIN chunks c ON c.doc_id = a.doc_id AND c.chunk_index BETWEEN a.chunk_index - %s AND a.chunk_index + %s
+                JOIN documents d ON d.doc_id = c.doc_id
+                WHERE a.chunk_id = ANY(%s) AND c.audience = ANY(%s) AND c.status = ANY(%s)
+                ORDER BY c.doc_id, c.chunk_index""",
+            (radius, radius, list(chunk_ids), list(audiences), list(statuses)),
+        ).fetchall()
+        return [_hit(r) for r in rows]
+
     # ------------------------------------------------------------------ info
     def stats(self) -> dict[str, Any]:
         meta = self.load_meta()

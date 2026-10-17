@@ -19,7 +19,7 @@ from typing import Any
 
 from pydantic import BaseModel, ValidationError
 
-from .retrieval import Retrieved
+from .retrieval import RetrievalResult, Retrieved
 
 INJECTION_PATTERNS = [
     r"\bignore\b.{0,40}\b(instructions?|rules?|prompts?)\b",
@@ -121,6 +121,11 @@ class Assistant:
             return done(AnswerResult(question, REFUSAL, True, "prompt_injection"))
 
         found = self.retriever.retrieve(question, k=self.k, mode="hybrid")
+        expand = getattr(self.retriever, "expand", None)
+        if callable(expand) and found.items:  # neighbour expansion (A1.6b); the abstain gate below still uses the search scores
+            expanded = expand(found.items)
+            if isinstance(expanded, list):
+                found = RetrievalResult(expanded, found.top_vector_score, found.top_keyword_score)
         base = dict(top_vector_score=found.top_vector_score, retrieved=[r.chunk_id for r in found.items])
         if not found.items or (found.top_vector_score is not None and found.top_vector_score < self.min_cosine):
             return done(AnswerResult(question, NOT_FOUND, True, "low_retrieval_confidence", **base))

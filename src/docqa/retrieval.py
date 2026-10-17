@@ -4,9 +4,15 @@ RRF scores each chunk as sum(1 / (rrf_k + rank)) over the lists it appears in. I
 calibration between the two searches (cosine similarity and ts_rank live on different scales), and
 a chunk that both searches like rises to the top. Access rules (audience/status) are applied inside
 the SQL of both searches, so nothing forbidden is ever a candidate.
+
+Neighbour expansion (A1.6b): the right *document* is often retrieved while the right *chunk* (the one with
+the price, the trial length, the exception) is the next one over. `Retriever.expand()` adds the chunks next
+to the best hits, from the same document, with the same access filter applied in SQL. It is a separate step
+(not part of `retrieve()`), so retrieval metrics stay comparable and the answering layer opts in.
 """
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 from typing import Sequence
 
@@ -22,6 +28,7 @@ class Retrieved:
     vector_rank: int | None = None
     keyword_rank: int | None = None
     vector_score: float | None = None  # cosine similarity: the calibrated signal used later for abstention
+    is_neighbor: bool = False  # True when added by Retriever.expand() rather than found by a search
 
     @property
     def chunk_id(self) -> str:
@@ -62,12 +69,17 @@ def rrf_fuse(vector_hits: Sequence[Hit], keyword_hits: Sequence[Hit], *, rrf_k: 
 
 class Retriever:
     """candidate_k = how many results each search contributes before fusion. Keep it small relative to
-    the corpus (this demo has only 35 public chunks); use 30-50 for corpora of thousands of chunks."""
+    the corpus (this demo has only 35 public chunks); use 30-50 for corpora of thousands of chunks.
+
+    neighbors / neighbor_top: radius (in chunks) and number of best hits that expand() widens. Default from
+    the env vars RETRIEVAL_NEIGHBORS (0 = off) and RETRIEVAL_NEIGHBOR_TOP (3)."""
 
     def __init__(self, store: Store, embedder=None, *, candidate_k: int = 10, rrf_k: int = 60,
-                 keyword_weight: float = 1.0) -> None:
+                 keyword_weight: float = 1.0, neighbors: int | None = None, neighbor_top: int | None = None) -> None:
         self.store, self.embedder = store, embedder
         self.candidate_k, self.rrf_k, self.keyword_weight = candidate_k, rrf_k, keyword_weight
+        self.neighbors = int(os.getenv("RETRIEVAL_NEIGHBORS", "0")) if neighbors is None else neighbors
+        self.neighbor_top = int(os.getenv("RETRIEVAL_NEIGHBOR_TOP", "3")) if neighbor_top is None else neighbor_top
 
     def retrieve(self, query: str, *, k: int = 5, mode: str = "hybrid",
                  audiences: Sequence[str] = ("public",), statuses: Sequence[str] = ("current",),
@@ -89,3 +101,19 @@ class Retriever:
         else:
             items = [Retrieved(h, h.score, keyword_rank=i) for i, h in enumerate(k_hits[:k], 1)]
         return RetrievalResult(items, v_hits[0].score if v_hits else None, k_hits[0].score if k_hits else None)
+
+    def expand(self, items: Sequence[Retrieved], *, audiences: Sequence[str] = ("public",),
+               statuses: Sequence[str] = ("current",)) -> list[Retrieved]:
+        """Original items first (same order, so [S1]..[Sk] do not change), then the neighbour chunks of the
+        best `neighbor_top` items. Neighbours come from the same document and pass the same SQL access filter."""
+        items = list(items)
+        if self.neighbors <= 0 or self.neighbor_top <= 0 or not items:
+            return items
+        have = {r.chunk_id for r in items}
+        anchors = [r.chunk_id for r in items[: self.neighbor_top]]
+        out = list(items)
+        for h in self.store.neighbors(anchors, self.neighbors, audiences, statuses):
+            if h.chunk_id not in have:
+                have.add(h.chunk_id)
+                out.append(Retrieved(h, 0.0, is_neighbor=True))
+        return out
