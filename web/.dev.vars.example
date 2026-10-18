@@ -1,0 +1,7 @@
+# Copy to .dev.vars for local development (the real .dev.vars is git-ignored).
+# TURNSTILE_SECRET below is Cloudflare's public TEST secret: it always verifies. Use the real one only in the Pages dashboard.
+TURNSTILE_SECRET=1x0000000000000000000000000000000AA
+SESSION_SECRET=local-dev-only-change-me-0123456789
+GATEWAY_SECRET=
+API_ORIGIN=http://127.0.0.1:8000
+API_PREFIX=

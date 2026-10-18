@@ -1,0 +1,13 @@
+{
+  "name": "a1-rag-demo-web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler pages dev public --compatibility-date=2026-10-01",
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "wrangler": "4.144.0"
+  }
+}
