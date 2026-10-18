@@ -124,7 +124,7 @@
       for (const c of data.citations) {
         const item = el("li", "cite");
         item.appendChild(el("b", "", c.id));
-        item.append(`${c.title} › ${c.heading}`);
+        item.append(c.heading && c.heading !== c.title ? `${c.title} › ${c.heading}` : c.title); // intro chunks have heading == title
         item.appendChild(el("small", "", String(c.url || "").replace(/^https?:\/\//, "")));
         list.appendChild(item);
       }
