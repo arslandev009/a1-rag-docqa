@@ -62,19 +62,26 @@
     return new Promise((resolve, reject) => {
       const started = Date.now();
       const go = () => {
-        if (!window.turnstile) {
+        const ts = window.turnstile;
+        // The async script first creates window.turnstile without render(): wait until render() really is a function.
+        if (!ts || typeof ts.render !== "function") {
           if (Date.now() - started > 15000) return reject(new Error("The verification widget did not load. Reload the page."));
           return setTimeout(go, 100);
         }
-        waiting = { resolve, reject };
-        if (widgetId === null) {
-          widgetId = window.turnstile.render("#turnstile", {
-            sitekey: cfg.turnstileSiteKey, appearance: "interaction-only",
-            callback: (token) => { if (waiting) { waiting.resolve(token); waiting = null; } },
-            "error-callback": () => { if (waiting) { waiting.reject(new Error("Verification error. Reload the page.")); waiting = null; } },
-          });
-        } else {
-          window.turnstile.reset(widgetId);
+        try {
+          waiting = { resolve, reject };
+          if (widgetId === null) {
+            widgetId = ts.render("#turnstile", {
+              sitekey: cfg.turnstileSiteKey, appearance: "interaction-only",
+              callback: (token) => { if (waiting) { waiting.resolve(token); waiting = null; } },
+              "error-callback": () => { if (waiting) { waiting.reject(new Error("Verification error. Reload the page.")); waiting = null; } },
+            });
+          } else {
+            ts.reset(widgetId);
+          }
+        } catch (err) {
+          waiting = null;
+          reject(new Error("The verification widget failed to start. Reload the page."));
         }
       };
       go();
