@@ -10,8 +10,9 @@ Run it standalone:                 uvicorn docqa.main:app
 
 Abuse protection (env-configurable, see .env.example): gateway-secret header, per-IP rate limit,
 daily LLM-call budget, provider allow-list, question length cap. The rate limit and the budget live in
-memory: they reset when the process restarts. That is fine for one free instance; move them into the
-database before running several instances.
+memory: they reset when the process restarts (a free Render instance restarts after every idle spell). Set
+API_BUDGET_STORE=db to keep the daily LLM-call budget in the database (table api_usage) so it survives restarts;
+the per-IP rate limit is per minute, so keeping it in memory is fine for one instance.
 """
 from __future__ import annotations
 
@@ -114,6 +115,29 @@ class DailyBudget:
             self.used += n
 
 
+class PersistentBudget:
+    """Daily LLM-call budget stored in the database, so spin-downs and restarts cannot reset it.
+    Fails closed: if the database cannot be read, the demo stops spending instead of guessing."""
+
+    def __init__(self, service: Any, max_calls: int) -> None:
+        self.service, self.max_calls = service, max_calls
+
+    def exhausted(self) -> bool:
+        try:
+            return self.service.usage_today() >= self.max_calls
+        except Exception:  # noqa: BLE001
+            log.exception("could not read the daily budget; refusing to spend")
+            return True
+
+    def add(self, n: int) -> None:
+        if n <= 0:
+            return
+        try:
+            self.service.add_usage(n)
+        except Exception:  # noqa: BLE001
+            log.exception("could not record %s LLM call(s) in the daily budget", n)
+
+
 # ------------------------------------------------------------------------------------ service
 def _default_llm_factory(provider: str):
     from llm_client import LLM
@@ -134,6 +158,13 @@ _SOURCES_SQL = """SELECT DISTINCT d.doc_id, d.title, d.source_url, d.version, d.
                   FROM chunks c JOIN documents d USING (doc_id)
                   WHERE c.audience = 'public' AND c.status = 'current'
                   ORDER BY d.title"""
+
+
+_USAGE_DDL = "CREATE TABLE IF NOT EXISTS api_usage (day date PRIMARY KEY, llm_calls integer NOT NULL DEFAULT 0)"
+_USAGE_TODAY = "SELECT llm_calls FROM api_usage WHERE day = (now() AT TIME ZONE 'utc')::date"
+_USAGE_ADD = """INSERT INTO api_usage (day, llm_calls) VALUES ((now() AT TIME ZONE 'utc')::date, %s)
+                ON CONFLICT (day) DO UPDATE SET llm_calls = api_usage.llm_calls + EXCLUDED.llm_calls
+                RETURNING llm_calls"""
 
 
 class ChatService:
@@ -195,6 +226,21 @@ class ChatService:
     def ask(self, provider: str, question: str) -> AnswerResult:
         return self._call(lambda: self._assistant(provider).ask(question))
 
+    def usage_today(self) -> int:
+        def run() -> int:
+            self.store.conn.execute(_USAGE_DDL)
+            row = self.store.conn.execute(_USAGE_TODAY).fetchone()
+            return int(row["llm_calls"]) if row else 0
+
+        return self._call(run)
+
+    def add_usage(self, n: int) -> int:
+        def run() -> int:
+            self.store.conn.execute(_USAGE_DDL)
+            return int(self.store.conn.execute(_USAGE_ADD, (n,)).fetchone()["llm_calls"])
+
+        return self._call(run)
+
     def sources(self) -> list[dict]:
         def run() -> list[dict]:
             rows = self.store.conn.execute(_SOURCES_SQL).fetchall()
@@ -210,7 +256,7 @@ class Runtime:
     service: Any  # ChatService, or a test double with ping() / ask() / sources()
     config: ApiConfig
     limiter: RateLimiter
-    budget: DailyBudget
+    budget: Any  # DailyBudget (memory) or PersistentBudget (database)
 
 
 @lru_cache(maxsize=1)
@@ -219,7 +265,12 @@ def get_runtime() -> Runtime:
     if not os.environ.get("LLM_PRICES_FILE"):
         os.environ["LLM_PRICES_FILE"] = str(ROOT / "prices.json")
     cfg = load_api_config()
-    return Runtime(ChatService(s), cfg, RateLimiter(cfg.rate_per_minute), DailyBudget(cfg.daily_llm_calls))
+    service = ChatService(s)
+    if os.getenv("API_BUDGET_STORE", "memory").strip().lower() == "db":
+        budget: Any = PersistentBudget(service, cfg.daily_llm_calls)
+    else:
+        budget = DailyBudget(cfg.daily_llm_calls)
+    return Runtime(service, cfg, RateLimiter(cfg.rate_per_minute), budget)
 
 
 def require_gateway(request: Request, rt: Runtime = Depends(get_runtime)) -> Runtime:
