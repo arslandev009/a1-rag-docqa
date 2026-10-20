@@ -282,6 +282,25 @@ def require_gateway(request: Request, rt: Runtime = Depends(get_runtime)) -> Run
     return rt
 
 
+def classify_error(exc: BaseException) -> str:
+    """'provider' (LLM or embedding API: rate limit, timeout, connection), 'database', or 'other'.
+    Decided by the package an exception class comes from, so no provider SDK has to be imported here."""
+    for cls in type(exc).__mro__:
+        top = cls.__module__.split(".")[0]
+        if top in ("openai", "httpx", "httpcore", "llm_client"):
+            return "provider"
+        if top == "psycopg":
+            return "database"
+    return "other"
+
+
+_ERROR_DETAIL = {
+    "provider": "The AI provider is busy or rate limited (free tier). Please try again in a minute.",
+    "database": "The database is waking up. Please try again in a few seconds.",
+    "other": "The assistant is temporarily unavailable.",
+}
+
+
 def _client_ip(request: Request) -> str:
     # The edge function sets X-Real-Client-IP; it is only trusted because the secret was checked first.
     forwarded = request.headers.get("x-real-client-ip", "").strip()
@@ -354,9 +373,10 @@ def chat(body: ChatRequest, request: Request, rt: Runtime = Depends(require_gate
 
     try:
         res: AnswerResult = rt.service.ask(provider, body.question)
-    except Exception:  # noqa: BLE001  never leak internals to the visitor
-        log.exception("chat failed (provider=%s)", provider)
-        raise HTTPException(status_code=503, detail="The assistant is temporarily unavailable.") from None
+    except Exception as exc:  # noqa: BLE001  never leak internals to the visitor
+        kind = classify_error(exc)
+        log.exception("chat failed (provider=%s, kind=%s, error=%s)", provider, kind, type(exc).__name__)
+        raise HTTPException(status_code=502 if kind == "provider" else 503, detail=_ERROR_DETAIL[kind]) from None
 
     rt.budget.add(res.llm_calls)
     log.info("chat provider=%s reason=%s llm_calls=%s latency=%.2fs", provider, res.reason, res.llm_calls, res.latency_s)
