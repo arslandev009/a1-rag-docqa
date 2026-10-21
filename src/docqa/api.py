@@ -154,6 +154,17 @@ def _build_store_and_retriever(s):
     return store, Retriever(store, emb, candidate_k=s.candidate_k, keyword_weight=s.keyword_weight)
 
 
+def prime_store(store) -> None:
+    """A newly opened Store does not know the vector size until load_meta() has run, and every search before that
+    fails. Called after each (re)connect, so the first request after a restart or a dropped connection works."""
+    try:
+        meta = store.load_meta()
+    except Exception:  # noqa: BLE001  an empty database has nothing to prime yet
+        return
+    if meta and getattr(store, "dim", None) is None and meta.get("embed_dim"):
+        store.dim = int(meta["embed_dim"])
+
+
 _SOURCES_SQL = """SELECT DISTINCT d.doc_id, d.title, d.source_url, d.version, d.effective_date
                   FROM chunks c JOIN documents d USING (doc_id)
                   WHERE c.audience = 'public' AND c.status = 'current'
@@ -194,6 +205,7 @@ class ChatService:
         self.store = None
         self._assistants.clear()
         self.store, self.retriever = self._build()
+        prime_store(self.store)
 
     def _call(self, fn: Callable[[], Any]) -> Any:
         with self._lock:
