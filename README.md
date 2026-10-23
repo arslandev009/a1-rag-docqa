@@ -1,5 +1,9 @@
 # A1: Ledgerly Support Assistant (production-style RAG)
 
+[![CI](https://github.com/arslandev009/a1-rag-docqa/actions/workflows/ci.yml/badge.svg)](https://github.com/arslandev009/a1-rag-docqa/actions/workflows/ci.yml)
+
+**Live demo: https://demo-api-kn51.onrender.com/demo/a1/** (free hosting: after a quiet period the first page load can take up to a minute while the server wakes up). Hosting code: [demo-api](https://github.com/arslandev009/demo-api).
+
 A customer-support assistant for a fictional invoicing SaaS ("Ledgerly"). The corpus is deliberately messy in the
 ways real client knowledge bases are: an **outdated policy that contradicts the current one**, a **plan-dependent
 answer** (rate limits), **things the company does not do** (Xero, SOC 2), **internal-only staff notes** the assistant
@@ -14,10 +18,11 @@ cited, safe, and cheap to run.
 - [x] Every answer carries citations (document, section, link); no valid citation means abstention
 - [x] Abstains with "I couldn't find this" instead of guessing; prompt-injection attempts refused
 - [x] Eval harness over 60 labelled questions: retrieval hit@k / MRR (document level), chunk-level coverage, answer correctness, faithfulness, abstention accuracy, leak rate (0)
-- [ ] Provider comparison table (Gemini, Groq, OpenAI, local) on the same eval: **only Gemini is valid so far**; the Groq run was cut off by free-plan limits (see "Known gaps")
-- [x] FastAPI service, Docker Compose (app + Postgres/pgvector), 87 tests
-- [ ] CI: the GitHub Actions workflow is written and runs the same lint + tests locally, but it has not run on GitHub yet (needs the `llm-client` package published as its own repo)
+- [ ] Provider comparison table (Gemini, Groq, OpenAI, local) on the same eval: **only Gemini is valid so far** (see "Known gaps")
+- [x] FastAPI service, Docker Compose (app + Postgres/pgvector), tests, CI green on GitHub
+- [x] Live demo (Render + Neon, both free tiers) with the UI served by the same service
 - [x] README with architecture, decisions and an honest failure analysis (this file)
+- [ ] 90-second video
 
 ## Architecture
 ```
@@ -27,6 +32,9 @@ question -> access filter (audience, status) -> hybrid search <------+  tsvector
          -> fusion (RRF) -> [optional neighbour chunks] -> answer prompt with sources -> LLM (llm-client)
          -> citation check + abstain rule -> JSON answer {answer, citations, abstained, reason}
 ```
+Hosting (repo [demo-api](https://github.com/arslandev009/demo-api)): one small FastAPI service on Render's free tier mounts this project's router
+at `/a1` and serves the demo UI at `/demo/a1/`; the database is a free Neon Postgres with pgvector. `docqa` and
+`llm-client` are installed there from GitHub at pinned commits.
 
 ## Key decisions
 | Decision | Why |
@@ -37,6 +45,8 @@ question -> access filter (audience, status) -> hybrid search <------+  tsvector
 | Heading path in every chunk | "Growth" or "Scale" limits stay attached to their section |
 | Chunk-level eval next to the document-level one | A document-level hit hid a real failure (q44); see the failure analysis |
 | Neighbour-chunk expansion built, tested, **off by default** | It fixed one failure but costs 32% more context; once the keyword weight was fixed it added nothing on this corpus |
+| Daily LLM-call budget stored in Postgres | A free instance restarts after every idle spell, so a counter in memory would reset constantly |
+| UI served by the same service as the API | One free instance for the whole demo, no cross-origin setup, nothing else to host |
 | Provider-agnostic `llm-client` | Swap Gemini / Groq / OpenAI / local by config; compare on the same evals |
 
 ## Roadmap
@@ -45,16 +55,16 @@ question -> access filter (audience, status) -> hybrid search <------+  tsvector
 - [x] **A1.3** Hybrid retrieval (vector + keyword, RRF) + access/version filters in SQL + document-level retrieval eval
 - [x] **A1.4** Answer generation: citations checked against the sources, abstention, 5 layered injection/leak defences, `docqa ask`
 - [x] **A1.5** End-to-end answer eval (rules + LLM judges), abstention-gate calibration, provider comparison
-- [x] **A1.6** FastAPI service, Docker Compose, tests; neighbour expansion; chunk-level eval; retrieval tuning
-- [ ] A1.6e CI first green run on GitHub; valid Groq run; OpenAI and local rows in the provider table
-- [ ] A1.7 Demo UI, 90-second video
+- [x] **A1.6** FastAPI service, Docker Compose, tests, CI; neighbour expansion; chunk-level eval; retrieval tuning
+- [x] **A1.7** Live demo: Render + Neon, UI at /demo/a1/, database-backed budget, operator diagnostics
+- [ ] 90-second video; valid Groq run; OpenAI and local rows in the provider table
 
 ## Run
 ```powershell
 # from ai-studio\projects\a1-rag-docqa, workspace venv active
 pip install -e ".[dev,api]"        # needs llm-client too: pip install -e ..\..\packages\llm-client
 docker compose up -d               # Postgres + pgvector on 127.0.0.1:55433
-pytest                             # 87 tests; the database tests are skipped when Postgres is down
+pytest                             # the database tests are skipped when Postgres is down
 
 docqa ingest                       # chunk + embed + store (re-run: only changed chunks are embedded)
 docqa stats
@@ -122,25 +132,30 @@ Run 3: p50 1.76 s, p95 2.2 s, 775 tokens in / 77 out per answer, $0.426 per 1,00
 - **q44 ("cheapest option if I only bill a handful of customers") and q48 (free trial):** the model abstained correctly, because the context did not contain the price or the trial terms. Root cause was retrieval, not generation: the vector search ranked the "Plans" chunk 2nd, but the keyword search matched generic words of the natural-language question ("bill" matches "Annual **billing**", "customers", ...) and RRF pushed the right chunk to 6th place by a margin of 0.0003. **The document-level eval could not see this**, because another chunk of the same document was retrieved (hit@5 stayed 1.0). The chunk-level eval can, and it also showed that a keyword weight of 0.1 puts the chunk back in the top 5 without sending any extra text.
 - **Neighbour-chunk expansion** was the first fix tried: it rescued q48 (its chunk sits next to a retrieved one) but not q44 (two chunks away). It is implemented, tested (including that neighbours can never cross the access filter) and off by default (`RETRIEVAL_NEIGHBORS=1` turns it on); it may matter for larger corpora.
 - **Auto-labelled gold chunks were noisy:** q17 got four gold chunks because "growth" and "scale" appear everywhere; q10, q08, q26, q47 were wrong in similar ways. The labels now say which entries are hand-reviewed.
+- **A bug that only the live deployment showed.** After the service restarted, or after Neon closed an idle connection, the service re-opened its database connection, but a freshly opened `Store` does not know the vector size until `load_meta()` has run. Every chat then failed with a generic 503 until something happened to call `/health`. The unit tests used fakes and never exercised the reconnect path, so they passed. It was found with a soak test (chat as the very first request), reproduced in a test that fails without the fix, and fixed by priming the store after every (re)connect (`prime_store`). It was then validated live: chat as the first request after a deploy, and after 6.5 minutes idle, 6 of 6 answered. Lesson: test the rebuild/reconnect path, not only the first path.
 - **Process failure, found and fixed:** this README once described neighbour expansion that did not exist in the code, and flags and behaviours that did not match the CLI. Every claim here was re-checked against the code; behaviours that matter have tests.
 
-## Known gaps (honest list)
+## Known gaps and quirks (honest list)
 - **Provider comparison is incomplete.** The Groq answering run failed for 36 of 44 answerable questions with provider errors (free-plan rate limits; Groq is also one of the two judges, so judging and answering share the same quota). Those results are kept in `results/_incomplete/` and are not shown as a quality result. To do: rerun Groq with `--judges gemini`, add OpenAI, add a local model.
 - Small corpus (10 documents, 41 chunks) and a small question set: the numbers say the pipeline works, not how it scales.
 - 36 of 44 gold chunk labels are auto-generated and unreviewed.
 - The abstain gate and keyword weight were tuned on the same questions they are evaluated on.
+- **Latency.** Eval p50 is 1.76 s. On the live demo, warm requests took about 1.2 to 2 s in my checks; the first request after a deploy took 7.5 s and the first after an idle spell 3.9 s (new connection and clients). Two early live requests took 104 s and 42 s and I could not reproduce or explain them.
+- **Visitor protection is off.** The demo has optional Cloudflare Turnstile support (switched on only by environment variables) but it is not enabled; the guards are a persisted daily LLM-call budget and a shared rate limit. A determined visitor could use up the day's budget.
+- **Answer wording.** For a request the documents do not cover (an exception to the refund policy) the assistant says "the sources do not mention ...", which exposes the RAG mechanics to a customer; "the documentation" would read better. Changing the prompt means re-running the full eval, so it is left as is.
 
 ## API
-FastAPI service on top of the assistant. `docqa.api:router` is importable (mount it in a shared demo-api with
-`app.include_router(router, prefix="/a1")`); `docqa.main:app` is the standalone app.
+FastAPI service on top of the assistant. `docqa.api:router` is importable (mounted at `/a1` by [demo-api](https://github.com/arslandev009/demo-api)).
 
 | Endpoint | Purpose |
 |---|---|
-| `GET /health` | readiness: database reachable and ingested (open, used by Docker / Render health checks) |
+| `GET /health` | readiness: database reachable and ingested |
 | `GET /sources` | public, current documents the assistant may cite |
 | `POST /chat` | `{"question": "...", "provider": "gemini"}` -> `{answer, abstained, reason, citations[], provider, model, latency_s, cost_usd}` |
 
-Retrieved text and provider error details are never returned to the caller.
+Retrieved text and provider error details are never returned to the caller. Failures are classified: an AI-provider
+failure (rate limit, timeout) answers 502 with a "provider is busy" message, a database failure 503 with "database is waking up",
+anything else a generic 503; the log line names the exception class.
 
 Run locally (database up and ingested):
 ```powershell
@@ -152,17 +167,17 @@ Run in Docker (database + API): `docker compose --profile app up -d --build`
 
 | Variable | Default | Meaning |
 |---|---|---|
-| `GATEWAY_SECRET` | empty | if set, `/chat` and `/sources` need the header `X-Gateway-Secret` (set by the edge function) |
+| `GATEWAY_SECRET` | empty | optional: if set, `/chat` and `/sources` need the header `X-Gateway-Secret` (for server-to-server use; do not set it when browsers call the API directly) |
 | `API_ALLOWED_PROVIDERS` | `gemini,groq` | provider allow-list; `API_DEFAULT_PROVIDER` picks the default |
-| `API_RATE_LIMIT_PER_MIN` | `10` | requests per client IP per minute (`X-Real-Client-IP`, trusted only after the secret check) |
+| `API_RATE_LIMIT_PER_MIN` | `10` | requests per client key per minute (`X-Real-Client-IP`; in the hosted demo the key is a session id or one shared bucket, never a client-supplied header) |
 | `API_DAILY_LLM_CALLS` | `300` | daily LLM-call budget (UTC); after that `/chat` answers 503 |
+| `API_BUDGET_STORE` | `memory` | `db` keeps the budget in the `api_usage` table so restarts cannot reset it |
 | `CORS_ORIGINS` | empty | comma separated origins, only for direct browser calls in local UI development |
 | `RETRIEVAL_KEYWORD_WEIGHT` / `RETRIEVAL_CANDIDATE_K` / `ANSWER_K` | `0.1` / `20` / `5` | retrieval settings chosen with `docqa eval-chunks` |
 | `RETRIEVAL_NEIGHBORS` / `RETRIEVAL_NEIGHBOR_TOP` | `0` / `3` | neighbour-chunk expansion (off by default) |
 
-Limits: rate limit and budget are in memory (reset on restart, single instance only); one question is answered at a
-time (one shared database connection, fine for a demo); the Docker build needs the sibling `packages/llm-client`
-folder, and CI installs `llm-client` from its own public GitHub repo.
+Limits: the per-minute rate limit is in memory (resets on restart, single instance only); one question is answered at a
+time (one shared database connection, fine for a demo).
 
 ## Free-plan notes
 All providers here are on free plans, so evals are built to be token-frugal and to fail politely:
